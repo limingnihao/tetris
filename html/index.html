@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>俄罗斯方块</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <canvas id="myCanvas" width="650" height="990" style="border:1px solid #000000;"></canvas>
+</body>
+<script>
+    var SHAPE_LIST = [
+        [[[0, 1, 1, 0],
+          [0, 1, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 0, 0]],
+         [[0, 1, 1, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 1],
+          [0, 0, 0, 1],
+          [0, 0, 1, 1],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 1, 1, 1],
+          [0, 0, 0, 0]]],
+
+        [[[0, 0, 1, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 1],
+          [0, 1, 1, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]],
+         [[0, 1, 0, 0],
+          [0, 1, 0, 0],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 1, 1, 1],
+          [0, 1, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]]],
+
+        [[[0, 0, 0, 0],
+          [0, 0, 1, 0],
+          [0, 1, 1, 1],
+          [0, 0, 0, 0]],
+         [[0, 0, 1, 0],
+          [0, 0, 1, 1],
+          [0, 0, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 1, 1, 1],
+          [0, 0, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 1, 0],
+          [0, 1, 1, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, 0]]],
+
+        [[[0, 0, 0, 0],
+          [0, 1, 1, 0],
+          [0, 0, 1, 1],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 1],
+          [0, 0, 1, 1],
+          [0, 0, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 1, 1, 0],
+          [0, 0, 1, 1],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 1],
+          [0, 0, 1, 1],
+          [0, 0, 1, 0],
+          [0, 0, 0, 0]]],
+
+        [[[0, 0, 0, 0],
+          [0, 0, 1, 1],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 1, 0],
+          [0, 0, 1, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 0, 1, 1],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 1, 0],
+          [0, 0, 1, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 0]]],
+
+        [[[0, 0, 1, 0],
+          [0, 0, 1, 0],
+          [0, 0, 1, 0],
+          [0, 0, 1, 0]],
+         [[0, 0, 0, 0],
+          [1, 1, 1, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]],
+         [[0, 1, 0, 0],
+          [0, 1, 0, 0],
+          [0, 1, 0, 0],
+          [0, 1, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [1, 1, 1, 1],
+          [0, 0, 0, 0]]],
+
+        [[[0, 0, 0, 0],
+          [0, 1, 1, 0],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 1, 1, 0],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 1, 1, 0],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]],
+         [[0, 0, 0, 0],
+          [0, 1, 1, 0],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0]]]
+    ];
+    var COLOR_ARRAY = ['#CC6666', '#66CC66', '#6666CC', '#CCCC66', '#CC66CC', '#66CCCC', '#DAAA00']
+
+    var myCanvas = document.getElementById("myCanvas");
+    var myCtx = myCanvas.getContext("2d");
+
+    const BLOCK_WIDTH = 10;
+    const BLOCK_HEIGHT = 20;
+    const BLOCK_SIZE = 50;
+
+    var currentShape;
+    var shape_x = BLOCK_WIDTH / 2 - 2;
+    var shape_y = 0;
+    var shape_type = 0;
+    var shape_color = 0;
+    var shape_style = 0;
+    var background = new Array();
+
+    window.addEventListener('keydown', doKeyDown, true);
+
+    for (var i = 0; i < BLOCK_HEIGHT; i++) {
+        background[i] = new Array();
+        for (var j = 0; j < BLOCK_WIDTH; j++) {
+            background[i][j] = -1;
+        }
+    }
+    nextShape();
+    setInterval(timeDrawHandler, 100);
+    setInterval(timeRunHandler, 500);
+
+    // 定时器 - 运行方块
+    function timeRunHandler() {
+        if (isRunningDown()) {
+            shape_y++;
+        } else {
+            copyShape();
+            cleanShape();
+            nextShape();
+        }
+
+    }
+
+    // 定时器 - 绘画
+    function timeDrawHandler() {
+        myCtx.fillStyle = "#AABBCCDD";
+        myCtx.fillRect(0, 0, BLOCK_WIDTH * BLOCK_SIZE, BLOCK_HEIGHT * BLOCK_SIZE);
+        drawBackground();
+        drawShape();
+    }
+
+    // 画背景
+    function drawBackground() {
+        for (var i = 0; i < BLOCK_HEIGHT; i++) {
+            for (var j = 0; j < BLOCK_WIDTH; j++) {
+                if (background[i][j] >= 0) {
+                    myCtx.fillStyle = COLOR_ARRAY[background[i][j]];
+                    x = j * BLOCK_SIZE + 1;
+                    y = i * BLOCK_SIZE + 1;
+                    size = BLOCK_SIZE - 2;
+                    myCtx.fillRect(x, y, size, size);
+                }
+            }
+        }
+    }
+
+    // 画方块
+    function drawShape() {
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (currentShape[i][j] >= 0) {
+                    myCtx.fillStyle = COLOR_ARRAY[shape_color];
+                    x = (shape_x + j) * BLOCK_SIZE + 1;
+                    y = (shape_y + i) * BLOCK_SIZE + 1;
+                    size = BLOCK_SIZE - 2;
+                    myCtx.fillRect(x, y, size, size);
+                }
+            }
+        }
+    }
+
+
+    // 将现在的shape拷贝到背景数组
+    function copyShape() {
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (currentShape[i][j] >= 0) {
+                    background[shape_y + i][shape_x + j] = currentShape[i][j];
+                }
+            }
+        }
+    }
+
+    // 削行
+    function cleanShape() {
+        var total = 0
+        for (var i = 0; i < BLOCK_HEIGHT; i++) {
+            var count = 0;
+            for (var j = 0; j < BLOCK_WIDTH; j++) {
+                if (background[i][j] >= 0) {
+                    count++;
+                }
+            }
+            //消除此行
+            if (count == BLOCK_WIDTH) {
+                total++;
+                for (var k = i; k > 1; k--) {
+                    background[k] = background[k - 1];
+                }
+            }
+        }
+        console.info(total);
+    }
+
+    // 产生方块
+    function nextShape() {
+        shape_x = BLOCK_WIDTH / 2 - 2;
+        shape_y = 0;
+        shape_type = parseInt(Math.random() * 6);
+        shape_color = parseInt(Math.random() * 6);
+        shape_style = 0;
+        console.info('type=' + shape_type + ', colr=' + shape_color);
+        var data = SHAPE_LIST[shape_type][shape_style];
+        currentShape = new Array();
+        for (var i = 0; i < 4; i++) {
+            currentShape[i] = new Array();
+            for (var j = 0; j < 4; j++) {
+                if (data[i][j] > 0) {
+                    currentShape[i][j] = shape_color;
+                } else {
+                    currentShape[i][j] = -1;
+                }
+            }
+        }
+    }
+
+    // 按钮事件处理
+    function doKeyDown(e) {
+        var keyID = e.keyCode ? e.keyCode : e.which;
+        //U P
+        if (keyID == 38) {
+            shape_style = (shape_style + 1) % 4;
+            var data = SHAPE_LIST[shape_type][shape_style];
+            currentShape = new Array();
+            for (var i = 0; i < 4; i++) {
+                currentShape[i] = new Array();
+                for (var j = 0; j < 4; j++) {
+                    if (data[i][j] > 0) {
+                        currentShape[i][j] = shape_color;
+                    } else {
+                        currentShape[i][j] = -1;
+                    }
+                }
+            }
+        }
+        // LEFT
+        if (keyID == 37) {
+            if (isRunningLeft()) {
+                shape_x--;
+            }
+        }
+        // RIGHT
+        if (keyID == 39) {
+            if (isRunningRight()) {
+                shape_x++;
+            }
+        }
+        // DOWN
+        if (keyID == 40) {
+            if (isRunningDown()) {
+                shape_y++;
+            } else {
+                copyShape();
+                cleanShape();
+                nextShape();
+            }
+        }
+        // 空格
+        if (keyID == 32) {
+            while(isRunningDown()) {
+                shape_y++;
+            }
+            copyShape();
+            cleanShape();
+            nextShape();
+        }
+
+    }
+
+    // 是否运行到底部
+    function isRunningDown() {
+        y = shape_y + 1;
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (currentShape[i][j] >= 0) {
+                    if (y + i >= BLOCK_HEIGHT) {
+                        return false;
+                    }
+                    if (background[y + i][shape_x + j] >= 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // 是否可以向左
+    function isRunningLeft() {
+        x = shape_x - 1;
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (currentShape[i][j] >= 0) {
+                    if (x + j < 0) {
+                        return false;   
+                    }
+                    if (background[shape_y + i][x + j] >= 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // 是否可以向右
+    function isRunningRight() {
+        x = shape_x + 1
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (currentShape[i][j] >= 0) {
+                    if (x + j >= BLOCK_WIDTH) {
+                        return false;
+                    }
+                    if (background[shape_y + i][x + j] >= 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+</script>
+
+</html>
