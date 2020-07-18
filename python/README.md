@@ -2,7 +2,7 @@
 
 先设计一下基本的流程，分别介绍每个流程所需要开发的代码：
 
-<img src="images/image-20200718230058582.png" alt="image-20200718230058582" style="zoom:40%;" />
+<img src="images/image-20200718230058582.png" alt="image-20200718230058582" style="zoom:20%;" />
 
 
 
@@ -38,7 +38,7 @@ def timerEvent(self, event):
 
 
 
-<img src="images/image-20200718231925073.png" alt="image-20200718231925073" style="zoom:40%;" />
+<img src="images/image-20200718231925073.png" alt="image-20200718231925073" style="zoom:20%;" />
 
 ### 键盘监听
 
@@ -128,4 +128,4 @@ def productShape(self):
 
 
 
-<img src="images/image-20200719000858199.png" alt="image-20200719000858199" style="zoom:50%;" />
+<img src="images/image-20200719000858199.png" alt="image-20200719000858199" style="zoom:20%;" />
